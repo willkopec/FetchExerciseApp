@@ -1,5 +1,5 @@
 # FetchExerciseApp
-A Mobile Development exercise from Fetch. This application was written in Java/Android Studio.
+A Mobile Development exercise from Fetch. This application was written in Java/Android Studio. This application is compatible for all android device screen sizes.
 
 ## How to run:
 
@@ -20,7 +20,7 @@ A Mobile Development exercise from Fetch. This application was written in Java/A
 ![appHome](https://github.com/willkopec/FetchExerciseApp/assets/85149000/a4626fdb-5e4e-4031-b02d-8f9f3c40b103)
 
 ![listPage](https://github.com/willkopec/FetchExerciseApp/assets/85149000/7034c46f-6bc1-4a87-b3c5-db8ec25fe870)
-
+Clicking print button shows the sorted lists in the Android Studio Console:
 ![printedList](https://github.com/willkopec/FetchExerciseApp/assets/85149000/1c809720-a6a1-4109-9624-2c4f02c430d0)
 
 ## Where to find the main code:
