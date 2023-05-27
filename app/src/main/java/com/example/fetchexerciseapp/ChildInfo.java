@@ -10,9 +10,7 @@ public class ChildInfo {
         return listId;
     }
 
-    public void setlistId(String listId) {
-        this.listId = listId;
-    }
+    public void setlistId(String listId) { this.listId = listId; }
 
     public String getName() {
         return name;

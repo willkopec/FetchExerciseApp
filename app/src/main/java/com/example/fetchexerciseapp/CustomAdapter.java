@@ -13,16 +13,16 @@ import java.util.ArrayList;
 public class CustomAdapter extends BaseExpandableListAdapter {
 
     private Context context;
-    private ArrayList<GroupInfo> deptList;
+    private ArrayList<GroupInfo> listIds;
 
-    public CustomAdapter(Context context, ArrayList<GroupInfo> deptList) {
+    public CustomAdapter(Context context, ArrayList<GroupInfo> listIds) {
         this.context = context;
-        this.deptList = deptList;
+        this.listIds = listIds;
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        ArrayList<ChildInfo> productList = deptList.get(groupPosition).getProductList();
+        ArrayList<ChildInfo> productList = listIds.get(groupPosition).getProductList();
         return productList.get(childPosition);
     }
 
@@ -54,19 +54,19 @@ public class CustomAdapter extends BaseExpandableListAdapter {
     @Override
     public int getChildrenCount(int groupPosition) {
 
-        ArrayList<ChildInfo> productList = deptList.get(groupPosition).getProductList();
+        ArrayList<ChildInfo> productList = listIds.get(groupPosition).getProductList();
         return productList.size();
 
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return deptList.get(groupPosition);
+        return listIds.get(groupPosition);
     }
 
     @Override
     public int getGroupCount() {
-        return deptList.size();
+        return listIds.size();
     }
 
     @Override

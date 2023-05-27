@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Retrieve the data from the link, put it into the ArrayList, and set the sortedMap in ListActivity to the sorted data
-        getData();
+        getData("https://fetch-hiring.s3.amazonaws.com/hiring.json");
 
         //Get Display List button and set onClick to show list page
         Button displayListBtn = (Button) findViewById(R.id.button);
@@ -48,17 +48,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void getData(){
+    public void getData(String apiURL){
         /*
         Query the data from the link
         */
         RequestQueue requestQueue;
         requestQueue = Volley.newRequestQueue(this);
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET,"https://fetch-hiring.s3.amazonaws.com/hiring.json",null,new Response.Listener<JSONArray>(){
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET,apiURL,null,new Response.Listener<JSONArray>(){
             @Override
             public void onResponse(JSONArray response) {
                 try {
-                    //go through the data and add the data to the arraylist
+                    //go through the data and add the data to the arraylist (Should be custom per API attributes)
                     for (int i=0;i<response.length();i++){
                         JSONObject jsonObject = response.getJSONObject(i);
                         allData.add(new record(Integer.parseInt(jsonObject.getString("id")),Integer.parseInt(jsonObject.getString("listId")),jsonObject.getString("name")));
@@ -66,10 +66,10 @@ public class MainActivity extends AppCompatActivity {
 
                     //Filter out and sort all of the data as needed
                     Map<Object, List<record>> recordsGrouped = allData.stream().filter((record) -> record.name != "null") //filter out all names with null
-                            .filter((record) -> record.name.length() >= 1)                                                  //filter out all the names with no text
-                            .sorted(Comparator.comparing(record::getListId))                                                //first sorting ArrayList by listId
-                            .sorted(Comparator.comparing(record::getName))                                                  //second sorting ArrayList by record names
-                            .collect(Collectors.groupingBy(w -> w.listId));                                                 //group the lists by listIds and set list Id groups to the value of the listId key in the map
+                            .filter((record) -> record.name.length() >= 1)                                                 //filter out all the names with no text
+                            .sorted(Comparator.comparing(record::getListId))                                               //first sorting ArrayList by listId
+                            .sorted(Comparator.comparing(record::getName))                                                 //second sorting ArrayList by record names
+                            .collect(Collectors.groupingBy(w -> w.listId));                                                //group the lists by listIds and set list Id groups to the value of the listId key in the map
 
                     //Set the ListActivity's sorted map to the grouped map created above
                     ListActivity.sortedMap = recordsGrouped;
