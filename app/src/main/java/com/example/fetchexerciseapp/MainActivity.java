@@ -18,6 +18,7 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -26,7 +27,9 @@ import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ArrayList<record> allData = new ArrayList<>();
+    final private ArrayList<record> allData = new ArrayList<>();
+
+    private Map<Object, List<record>> recordsGrouped;
 
 
     @Override
@@ -37,13 +40,18 @@ public class MainActivity extends AppCompatActivity {
         //Retrieve the data from the link, put it into the ArrayList, and set the sortedMap in ListActivity to the sorted data
         getData("https://fetch-hiring.s3.amazonaws.com/hiring.json");
 
+        System.out.println("onCreate was called!");
+
+
         //Get Display List button and set onClick to show list page
         Button displayListBtn = (Button) findViewById(R.id.button);
         displayListBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), ListActivity.class);
+                Intent intent = new Intent(MainActivity.this, ListActivity.class);
+                //intent.putExtra("sortedMap", (Serializable) recordsGrouped);
                 startActivity(intent);
+                finish();
             }
         });
     }
@@ -52,8 +60,21 @@ public class MainActivity extends AppCompatActivity {
         /*
         Query the data from the link
         */
-        RequestQueue requestQueue;
-        requestQueue = Volley.newRequestQueue(this);
+        RequestQueue requestQueue = null;
+        if(requestQueue == null){
+            requestQueue = Volley.newRequestQueue(this);
+        }
+
+        //Check if the data is being recieved via cache or
+        //via network thread (NOTE: Get requests get cached
+        //after first request and parsed via cache after the
+        //first request to avoid multiple network requests)
+        if(requestQueue.getCache().get(apiURL) != null){
+            System.out.println("Getting data from the cache!");
+        } else {
+            System.out.println("Using Network Threads to get data!");
+        }
+
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET,apiURL,null,new Response.Listener<JSONArray>(){
             @Override
             public void onResponse(JSONArray response) {
@@ -64,8 +85,12 @@ public class MainActivity extends AppCompatActivity {
                         allData.add(new record(Integer.parseInt(jsonObject.getString("id")),Integer.parseInt(jsonObject.getString("listId")),jsonObject.getString("name")));
                     }
 
+
+
+                    Intent listIntent = new Intent(MainActivity.this, ListActivity.class);
+
                     //Filter out and sort all of the data as needed
-                    Map<Object, List<record>> recordsGrouped = allData.stream().filter((record) -> record.name != "null") //filter out all names with null
+                    recordsGrouped = allData.stream().filter((record) -> record.name != "null") //filter out all names with null
                             .filter((record) -> record.name.length() >= 1)                                                 //filter out all the names with no text
                             .sorted(Comparator.comparing(record::getListId))                                               //first sorting ArrayList by listId
                             .sorted(Comparator.comparing(record::getName))                                                 //second sorting ArrayList by record names
@@ -73,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
 
                     //Set the ListActivity's sorted map to the grouped map created above
                     ListActivity.sortedMap = recordsGrouped;
+
+
 
                 }catch (Exception e){
                     e.printStackTrace();
@@ -96,9 +123,9 @@ public class MainActivity extends AppCompatActivity {
 A class created to store the API info. Includes a Constructor, getters, and setters.
 
 */
-class record{
-    int id;
-    int listId;
+class record {
+    final int id;
+    final int listId;
     String name;
 
     public record(int id, int listId, String name){
